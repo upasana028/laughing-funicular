@@ -130,21 +130,21 @@ public class GorTester {
       String leftJson = new String(orig.getBody(),"UTF8");
       String rightJson = new String(replay.getBody(),"UTF8");
        
-    ObjectMapper mapper = new ObjectMapper();
-    TypeReference<HashMap<String, Object>> type = new TypeReference<HashMap<String, Object>>() {};
+      ObjectMapper mapper = new ObjectMapper();
+      TypeReference<HashMap<String, Object>> type = new TypeReference<HashMap<String, Object>>() {};
 
-    Map<String, Object> leftMap = mapper.readValue(leftJson, type);
-    Map<String, Object> rightMap = mapper.readValue(rightJson, type);
+      Map<String, Object> leftMap = mapper.readValue(leftJson, type);
+      Map<String, Object> rightMap = mapper.readValue(rightJson, type);
 
       Map<String, Object> leftFlatMap = FlatMapUtil.flatten(leftMap);
       Map<String, Object> rightFlatMap = FlatMapUtil.flatten(rightMap);
 
       MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
-      writeUsingFileWriter("Entries only on the left\n--------------------------");
+      writeUsingFileWriter("Entries only on the Original Response\n--------------------------");
       difference.entriesOnlyOnLeft().forEach((key, value) -> writeUsingFileWriter(key + ": " + value));
 
-      writeUsingFileWriter("\n\nEntries only on the right\n--------------------------");
+      writeUsingFileWriter("\n\nEntries only on Replayed Response\n--------------------------");
       difference.entriesOnlyOnRight().forEach((key, value) -> writeUsingFileWriter(key + ": " + value));
 
       writeUsingFileWriter("\n\nEntries differing\n--------------------------");
