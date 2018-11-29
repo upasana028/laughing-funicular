@@ -141,10 +141,10 @@ public class GorTester {
 
       MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
-      writeUsingFileWriter("Entries only on the left\n--------------------------");
+      writeUsingFileWriter("Entries only in Original Response\n--------------------------");
       difference.entriesOnlyOnLeft().forEach((key, value) -> writeUsingFileWriter(key + ": " + value));
 
-      writeUsingFileWriter("\n\nEntries only on the right\n--------------------------");
+      writeUsingFileWriter("\n\nEntries only in Replayed Response\n--------------------------");
       difference.entriesOnlyOnRight().forEach((key, value) -> writeUsingFileWriter(key + ": " + value));
 
       writeUsingFileWriter("\n\nEntries differing\n--------------------------");
