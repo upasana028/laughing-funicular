@@ -1,0 +1,15 @@
+nl/knaw/huygens/gortester/messages/GorReplayedResponse.class
+nl/knaw/huygens/gortester/rewriterules/StoreAuthRule.class
+nl/knaw/huygens/gortester/messages/GorOriginalResponse.class
+nl/knaw/huygens/gortester/messages/GorRequest.class
+nl/knaw/huygens/gortester/FlatMapUtil.class
+nl/knaw/huygens/gortester/rewriterules/UnchunkRule.class
+nl/knaw/huygens/gortester/rewriterules/GunzipRule.class
+nl/knaw/huygens/gortester/messages/GorMessage.class
+nl/knaw/huygens/gortester/rewriterules/IgnoreStaticRule.class
+nl/knaw/huygens/gortester/rewriterules/IgnoreDateDifferenceRule.class
+nl/knaw/huygens/gortester/GorTester$1.class
+nl/knaw/huygens/gortester/App.class
+nl/knaw/huygens/gortester/GorTester.class
+nl/knaw/huygens/gortester/messages/GorResponse.class
+nl/knaw/huygens/gortester/rewriterules/RewriteRule.class
