@@ -117,8 +117,9 @@ public class GorTester {
     boolean differs = false;
     results.println(replay.getId());
     writeUsingFileWriter(replay.getId());
-
-    if(orig.getStatus().equals(200) && replay.getStatus().equals(904))
+    int original_status = orig.getStatus();
+    int replay_status = replay.getStatus();
+    if( original_status.equals(200) && replay_status.equals(904))
       {
         results.println("  ignorance is bliss");
          writeUsingFileWriter(" ignorance is bliss");
