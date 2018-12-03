@@ -117,9 +117,16 @@ public class GorTester {
     boolean differs = false;
     results.println(replay.getId());
     writeUsingFileWriter(replay.getId());
+    if("200".equals(orig.getStatus()) && "904".equals(replay.getStatus()))
+      {
+        results.println("  ignorance");
+         writeUsingFileWriter(" ignorance");
+         return;
+      }
+      
     if (orig.getStatus() != replay.getStatus()) {
       results.println("  had differing status");
-       writeUsingFileWriter("  had differing status");
+       writeUsingFileWriter("  had differing status" + orig.getStatus() + "--" + replay.getStatus());
       differs = true;
     }
   try{
@@ -173,7 +180,8 @@ public class GorTester {
     //   }
     //   //replayed is allowed to have more headers.
     // }
-    if (differs) {
+    if (differs)
+     {
       writeToFile(request, orig, replay, results);
     }
   }
