@@ -119,7 +119,7 @@ public class GorTester {
     writeUsingFileWriter(replay.getId());
     int original_status = orig.getStatus();
     int replay_status = replay.getStatus();
-    if( original_status.equals(200) && replay_status.equals(904))
+    if( original_status == 200 && replay_status == 904)
       {
         results.println("  ignorance is bliss");
          writeUsingFileWriter(" ignorance is bliss");
