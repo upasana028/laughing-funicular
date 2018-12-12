@@ -30,7 +30,7 @@ public class GorTester {
   private final Map<String, GorRequest> requests;
   private final String dirname;
   private final RewriteRule[] rewriteRules;
-
+  private final String[] ignoreThese = { "created","fulfill" };
   public GorTester(String dirname, RewriteRule... rewriteRules) throws FileNotFoundException,
       UnsupportedEncodingException {
     this.dirname = dirname;
@@ -116,25 +116,25 @@ public class GorTester {
   private void compare(GorRequest request, GorOriginalResponse orig, GorReplayedResponse replay, PrintWriter results) {
     boolean differs = false;
     results.println(replay.getId());
-    writeUsingFileWriter(replay.getId());
+    //writeUsingFileWriter(replay.getId());
     int original_status = orig.getStatus();
     int replay_status = replay.getStatus();
-    if( original_status == 200 && replay_status == 904)
+    if(  replay_status == 904)
       {
-        results.println("  ignorance is bliss");
-         writeUsingFileWriter(" ignorance is bliss");
+       // results.println("  ignorance is bliss");
+        // writeUsingFileWriter(" ignorance is bliss");
          return;
       }
       
     if (orig.getStatus() != replay.getStatus()) {
-      results.println("  had differing status");
-       writeUsingFileWriter("  had differing status" + orig.getStatus() + "--" + replay.getStatus());
+      results.println(replay.getId()+"  had differing status");
+       writeUsingFileWriter(replay.getId()+"  had differing status" + orig.getStatus() + "--" + replay.getStatus());
       differs = true;
     }
   try{
     if (!Arrays.equals(orig.getBody(), replay.getBody())) {
-      results.println("  had differing response bodies");
-      writeUsingFileWriter("  had differing response bodies");
+     // results.println("  had differing response bodies");
+     // writeUsingFileWriter("  had differing response bodies");
       differs = true;
       String leftJson = new String(orig.getBody(),"UTF8");
       String rightJson = new String(replay.getBody(),"UTF8");
@@ -150,14 +150,14 @@ public class GorTester {
 
       MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
-      writeUsingFileWriter("Entries only in Original Response\n--------------------------");
-      difference.entriesOnlyOnLeft().forEach((key, value) -> writeUsingFileWriter(key + ": " + value));
+     // writeUsingFileWriter("Entries only in Original Response\n--------------------------");
+      difference.entriesOnlyOnLeft().forEach((key, value) -> writeUsingFileWriter("Original-" +key + ": " + value));
 
-      writeUsingFileWriter("\n\nEntries only in Replayed Response\n--------------------------");
-      difference.entriesOnlyOnRight().forEach((key, value) -> writeUsingFileWriter(key + ": " + value));
+     // writeUsingFileWriter("\n\nEntries only in Replayed Response\n--------------------------");
+      difference.entriesOnlyOnRight().forEach((key, value) -> writeUsingFileWriter("Replayed-" + key + ": " + value));
 
-      writeUsingFileWriter("\n\nEntries differing\n--------------------------");
-      difference.entriesDiffering().forEach((key, value) -> writeUsingFileWriter(key + ": " + value));
+     // writeUsingFileWriter("\n\nEntries differing\n--------------------------");
+      difference.entriesDiffering().forEach((key, value) -> writeUsingFileWriter("Diff-" + key + ": " + value));
 
     }
   }
@@ -204,6 +204,12 @@ public class GorTester {
       File file = new File(this.dirname + "/FileWriter.txt");
       FileWriter fr = null;
       try {
+	for(String key : ignoreThese){
+		if(data!=null && ("---"+data).contains(key)){
+			return;
+		}
+	}
+	
           fr = new FileWriter(file,true);
           fr.write(data + "\n");
       } catch (IOException e) {
