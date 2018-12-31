@@ -30,7 +30,7 @@ public class GorTester {
   private final Map<String, GorRequest> requests;
   private final String dirname;
   private final RewriteRule[] rewriteRules;
-  private final String[] ignoreThese = { "created","fulfill" };
+  private final String[] ignoreThese = { "created","fulfill","server_time" };
   public GorTester(String dirname, RewriteRule... rewriteRules) throws FileNotFoundException,
       UnsupportedEncodingException {
     this.dirname = dirname;
@@ -125,7 +125,7 @@ public class GorTester {
         // writeUsingFileWriter(" ignorance is bliss");
          return;
       }
-      
+      	
     if (orig.getStatus() != replay.getStatus()) {
       results.println(replay.getId()+"  had differing status");
        writeUsingFileWriter(replay.getId()+"  had differing status" + orig.getStatus() + "--" + replay.getStatus());
@@ -150,15 +150,37 @@ public class GorTester {
 
       MapDifference<String, Object> difference = Maps.difference(leftFlatMap, rightFlatMap);
 
+     
      // writeUsingFileWriter("Entries only in Original Response\n--------------------------");
-      difference.entriesOnlyOnLeft().forEach((key, value) -> writeUsingFileWriter("Original-" +key + ": " + value));
+     // difference.entriesOnlyOnLeft().forEach((key, value) -> writeUsingFileWriterWithValues("Original-" +key + ": " + value, request, orig, replay,results));
+	StringBuilder keysOnLeft = new StringBuilder();
+     difference.entriesOnlyOnLeft().forEach((key, value) -> buildKeysList(key,keysOnLeft));
+	if(!keysOnLeft.toString().isEmpty()){
+	writeUsingFileWriter("Entries only in Original Response\n--------------------------");
+		writeUsingFileWriter(replay.getId()+"--" + keysOnLeft.toString());
+	}
 
      // writeUsingFileWriter("\n\nEntries only in Replayed Response\n--------------------------");
-      difference.entriesOnlyOnRight().forEach((key, value) -> writeUsingFileWriter("Replayed-" + key + ": " + value));
+  //    difference.entriesOnlyOnRight().forEach((key, value) -> writeUsingFileWriterWithValues("Replayed-" + key + ": " + value, request, orig, replay,results));
+
+	StringBuilder keysOnRight = new StringBuilder();
+     difference.entriesOnlyOnRight().forEach((key, value) -> buildKeysList(key,keysOnRight));
+        if(!keysOnRight.toString().isEmpty()){
+		writeUsingFileWriter("\n\nEntries only in Replayed Response\n--------------------------");
+
+                writeUsingFileWriter(replay.getId()+"--" + keysOnRight.toString());
+        }
 
      // writeUsingFileWriter("\n\nEntries differing\n--------------------------");
-      difference.entriesDiffering().forEach((key, value) -> writeUsingFileWriter("Diff-" + key + ": " + value));
+     // difference.entriesDiffering().forEach((key, value) -> writeUsingFileWriterWithValues("Diff-" + key + ": " + value, request, orig, replay,results));
 
+	  StringBuilder keysOnBoth = new StringBuilder();
+     difference.entriesDiffering().forEach((key, value) -> buildKeysList(key,keysOnBoth));
+        if(!keysOnBoth.toString().isEmpty()){
+                writeUsingFileWriter("\n\nEntries differing in both Response\n--------------------------");
+
+                writeUsingFileWriter(replay.getId()+"--" + keysOnBoth.toString());
+        }
     }
   }
   catch(Exception e){}
@@ -200,7 +222,25 @@ public class GorTester {
     }
   }
 	
-  private void writeUsingFileWriter(String data) {
+  private void buildKeysList(String data,StringBuilder keySet) {
+      try {
+        for(String key : ignoreThese){
+                if(data!=null && ("---"+data).contains(key)){
+                        return;
+                }
+        }
+	keySet.append(data);
+	keySet.append(", ");
+
+      } catch (Exception e) {
+          e.printStackTrace();
+      }finally{
+          //close resources
+      }
+  }
+
+
+   private void writeUsingFileWriter(String data) {
       File file = new File(this.dirname + "/FileWriter.txt");
       FileWriter fr = null;
       try {
@@ -224,4 +264,36 @@ public class GorTester {
       }
   }
   
+  private void writeUsingFileWriterWithValues(String data,GorRequest request, GorOriginalResponse orig, GorReplayedResponse replay, PrintWriter results) {
+      File file = new File(this.dirname + "/FileWriter.txt");
+      FileWriter fr = null;
+      try {
+	for(String key : ignoreThese){
+		if(data!=null && ("---"+data).contains(key)){
+			return;
+		}
+	}
+          fr = new FileWriter(file,true);
+          fr.write(data + "\n");
+          fr.write(request.getPath());
+          fr.write(data + "\n");
+          request.getHttpBlock(results);
+          fr.write(data + "\n");
+          orig.getHttpBlock(results);
+          fr.write(data + "\n");
+          replay.getHttpBlock(results);
+      } catch (IOException e) {
+          e.printStackTrace();
+      }finally{
+          //close resources
+          try {
+              fr.close();
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+      }
+  }
+  
+  
 }
+
